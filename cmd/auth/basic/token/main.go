@@ -3,79 +3,59 @@ package main
 import (
 	"bufio"
 	"context"
-	"errors"
+	"flag"
 	"log"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/hashicorp/boundary/api"
-	"github.com/hashicorp/boundary/api/authtokens"
-	"github.com/hashicorp/boundary/api/users"
 
-	"github.com/alqasr/alqasr/internal/boundary"
+	"github.com/alqasr/alqasr/internal/config"
+	"github.com/alqasr/alqasr/internal/service"
 	"github.com/alqasr/alqasr/internal/squid"
 )
 
-const (
-	globalScope = "global"
-	addr        = "http://10.5.0.5:9200/"
-)
-
-func auth(ctx context.Context, client *api.Client, username string, password string) (bool, error) {
-	client.SetToken(password)
-
-	id, err := boundary.TokenIdFromToken(password)
-	if err != nil {
-		return false, err
-	}
-
-	token, err := authtokens.NewClient(client).Read(ctx, id)
-	if err != nil {
-		return false, err
-	}
-
-	user, err := users.NewClient(client).Read(ctx, token.Item.UserId)
-	if err != nil {
-		return false, err
-	}
-
-	if username != user.Item.LoginName {
-		return false, errors.New("security warning: token belongs to another user")
-	}
-
-	return true, nil
-}
-
 func main() {
+	logger := log.New(os.Stderr, "", log.LstdFlags)
+	logger.Println("starting service")
+
+	var configFile string
+	flag.StringVar(&configFile, "config.file", "config.yml", "alqasr configuration file path")
+	flag.Parse()
+
+	logger.Println("loading config file")
+
+	cfg, err := config.Load(configFile)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	client, err := api.NewClient(nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	client.SetAddr(cfg.Boundary.Controller)
+	client.SetClientTimeout(time.Second * 10)
+
 	ctx := context.Background()
-
-	// The default Addr is http://127.0.0.1:9200, but this can be overridden by
-	// setting the `BOUNDARY_ADDR` environment variable.
-	os.Setenv("BOUNDARY_ADDR", addr)
-
-	clientConfig, err := api.DefaultConfig()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// change default value (60 seconds)
-	clientConfig.Timeout = time.Second * 1
-
-	client, err := api.NewClient(clientConfig)
-	if err != nil {
-		log.Fatal(err)
-	}
+	tokenAuthService := service.NewTokenAuthService(ctx, client)
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		args := strings.Split(scanner.Text(), " ")
-		if len(args) < 2 {
+		values := strings.Split(scanner.Text(), " ")
+		if len(values) < 2 {
 			squid.SendERR()
 			continue
 		}
 
-		if ok, _ := auth(ctx, client, args[0], args[1]); !ok {
+		ok, err := tokenAuthService.Auth(values[0], values[1])
+		if err != nil {
+			logger.Println(err)
+		}
+
+		if !ok {
 			squid.SendERR()
 			continue
 		}

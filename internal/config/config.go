@@ -12,12 +12,7 @@ type Config struct {
 }
 
 type Boundary struct {
-	Controller Controller `yaml:"controller"`
-}
-
-type Controller struct {
-	Addr string `yaml:"addr"`
-	Port int    `yaml:"port"`
+	Controller string `yaml:"controller"`
 }
 
 type Squid struct {

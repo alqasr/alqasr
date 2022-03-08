@@ -4,15 +4,10 @@ import (
 	"fmt"
 )
 
-const (
-	OK  = "OK\n"
-	ERR = "ERR\n"
-)
-
 func SendOK() {
-	fmt.Print(OK)
+	fmt.Println("OK")
 }
 
 func SendERR() {
-	fmt.Print(ERR)
+	fmt.Println("ERR")
 }

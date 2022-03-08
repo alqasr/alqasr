@@ -12,7 +12,7 @@ import (
 	"github.com/alqasr/alqasr/internal/config"
 )
 
-const tpl = `function FindProxyForURL(url, host) {
+const pac = `function FindProxyForURL(url, host) {
   {{- $port := .Port -}}
   {{- if not .AllowedDomains }}
     return "PROXY 127.0.0.1:{{ $port }}";
@@ -27,8 +27,8 @@ const tpl = `function FindProxyForURL(url, host) {
 }
 `
 
-func render(cfg config.Squid) ([]byte, error) {
-	tmpl, err := template.New("pac").Parse(tpl)
+func render(cfg config.Squid, pac string) ([]byte, error) {
+	tmpl, err := template.New("pac").Parse(pac)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func main() {
 	logger.Println("starting service")
 
 	var configFile string
-	flag.StringVar(&configFile, "config.file", "config.yml", "alqasr configuration file path.")
+	flag.StringVar(&configFile, "config.file", "config.yml", "alqasr configuration file path")
 	flag.Parse()
 
 	logger.Println("loading config file")
@@ -60,7 +60,7 @@ func main() {
 
 	logger.Println("render proxy.pac using config")
 
-	pac, err := render(cfg.Squid)
+	pac, err := render(cfg.Squid, pac)
 	if err != nil {
 		logger.Fatal(err)
 	}
