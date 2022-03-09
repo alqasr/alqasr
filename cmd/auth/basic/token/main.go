@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	logger := log.New(os.Stderr, "", log.LstdFlags)
+	logger := log.New(os.Stderr, "alqasr_auth: ", log.LstdFlags|log.Lmsgprefix)
 	logger.Println("starting service")
 
 	var configFile string

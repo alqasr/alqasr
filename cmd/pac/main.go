@@ -44,7 +44,7 @@ func render(cfg config.Squid, pac string) ([]byte, error) {
 }
 
 func main() {
-	logger := log.New(os.Stdout, "", log.LstdFlags)
+	logger := log.New(os.Stdout, "alqasr_pac: ", log.LstdFlags|log.Lmsgprefix)
 	logger.Println("starting service")
 
 	var configFile string
