@@ -1,10 +1,6 @@
-boundary:
-  controller: http://10.5.0.5:9200/
-
-squid:
+proxy:
   port: 3128
 
   # An empty value [] means accepting all traffic, increasing costs.
   allowed_domains:
     - example.com
-    - test.com

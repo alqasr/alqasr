@@ -7,15 +7,10 @@ import (
 )
 
 type Config struct {
-	Squid    Squid    `yaml:"squid"`
-	Boundary Boundary `yaml:"boundary"`
+	Proxy Proxy `yaml:"proxy"`
 }
 
-type Boundary struct {
-	Controller string `yaml:"controller"`
-}
-
-type Squid struct {
+type Proxy struct {
 	Port           int      `yaml:"port"`
 	AllowedDomains []string `yaml:"allowed_domains,omitempty"`
 }

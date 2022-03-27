@@ -27,7 +27,7 @@ const pac = `function FindProxyForURL(url, host) {
 }
 `
 
-func render(cfg config.Squid, pac string) ([]byte, error) {
+func render(cfg config.Proxy, pac string) ([]byte, error) {
 	tmpl, err := template.New("pac").Parse(pac)
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func main() {
 
 	logger.Println("render proxy.pac using config")
 
-	pac, err := render(cfg.Squid, pac)
+	pac, err := render(cfg.Proxy, pac)
 	if err != nil {
 		logger.Fatal(err)
 	}
