@@ -15,8 +15,8 @@ import (
 )
 
 func main() {
-	logger := log.New(os.Stderr, "alqasr_acl: ", log.LstdFlags|log.Lmsgprefix)
-	logger.Println("starting service")
+	logger := log.New(os.Stderr, "alqasr-acl: ", log.LstdFlags|log.Lmsgprefix)
+	logger.Println("starting external acl process")
 
 	var boundaryController string
 	flag.StringVar(&boundaryController, "boundary-controller", "http://localhost:9200/", "Boundary Controller address as URL.")

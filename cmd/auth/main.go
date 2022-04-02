@@ -16,8 +16,8 @@ import (
 )
 
 func main() {
-	logger := log.New(os.Stderr, "alqasr_auth: ", log.LstdFlags|log.Lmsgprefix)
-	logger.Println("starting service")
+	logger := log.New(os.Stderr, "alqasr-auth: ", log.LstdFlags|log.Lmsgprefix)
+	logger.Println("starting auth helper")
 
 	var boundaryController string
 	flag.StringVar(&boundaryController, "boundary-controller", "http://localhost:9200/", "Boundary Controller address as URL.")
