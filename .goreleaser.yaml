@@ -1,0 +1,40 @@
+builds:
+  - binary: alqasr_auth
+    env:
+      - CGO_ENABLED=0
+    main: ./cmd/auth
+    id: "alqasr_auth"
+    flags:
+      - -trimpath #removes all file system paths from the compiled executable
+    goos:
+      - linux
+      - darwin
+
+  - binary: alqasr_acl
+    env:
+      - CGO_ENABLED=0
+    main: ./cmd/acl
+    id: "alqasr_acl"
+    flags:
+      - -trimpath #removes all file system paths from the compiled executable
+    goos:
+      - linux
+      - darwin
+
+archives:
+  - format: zip
+    files:
+      - none*
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
